@@ -24,7 +24,17 @@ def home():
 
 @app.route("/ranking")
 def ranking():
-    return render_template("ranking.html")
+    con = sqlite3.connect(DATABASE)
+    data = con.execute("select * from user_table").fetchall()
+    con.close()
+
+    ranking_list = []
+    rank = 0
+    for d in data:
+        rank += 1
+        ranking_list.append({"rank":rank,"name":d[0],"money":d[1]})
+
+    return render_template("ranking.html",data=ranking_list)
 
 
 @app.route("/withdrawal")

@@ -3,5 +3,24 @@
 
 {% block content %}
 <h1>ランキング</h1>
+{% if data == [] %}
+    <p>ランキングはありません</p>
+{% else %}
+    <table border = "1">
+        <tr>
+            <th>順位</th>
+            <th>名前</th>
+            <th>残高</th>
+        </tr>
+        {% for d in data %}
+            <tr>
+                <th>{{d.rank}}</th>
+                <th>{{d.name}}</th>
+                <th>{{d.money}}</th>
+            </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
 <button onclick="history.back()">戻る</button>
 {% endblock %}
