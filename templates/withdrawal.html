@@ -3,5 +3,9 @@
 
 {% block content %}
 <h1>引き出し</h1>
+<form method="POST">
+    <input type="text" name="entry">
+    <input type="submit" value="確定">
+</form>
 <button onclick="history.back()">戻る</button>
 {% endblock %}

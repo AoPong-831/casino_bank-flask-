@@ -12,6 +12,20 @@ db.create_bank()
 
 error_text = ""#エラー時にerror.htmlで表示するテキスト
 
+
+def search_data(name):#データ検索
+    con = sqlite3.connect(DATABASE)
+    data_list = con.execute("select * from user_table").fetchall()
+    con.close()
+
+    for data in data_list:
+        if name == data[0]:#探している名前と一致
+            request_data = data
+            break
+    
+    return request_data
+
+
 @app.route("/")
 def index():
     return render_template("home.html")
@@ -37,14 +51,52 @@ def ranking():
     return render_template("ranking.html",data=ranking_list)
 
 
-@app.route("/withdrawal")
-def withdrawal():
-    return render_template("withdrawal.html")
+@app.route("/<string:name>/bank")
+def bank(name):
+    return render_template("bank.html",name=name)
 
 
-@app.route("/deposit")
-def deposit():
-    return render_template("deposit.html")
+
+@app.route("/<string:name>/withdrawal",methods=["GET","POST"])
+def withdrawal(name):
+    if request.method == "POST":
+        entry = request.form["entry"]
+        
+        data = search_data(name)#データを検索
+
+        cal_result = data[1] - int(entry)#引き出し処理(計算結果)
+
+        #上書き処理
+        con = sqlite3.connect(DATABASE)
+        con.execute("update user_table set money = ? where name = ?",(cal_result,data[0]))
+        con.commit()
+        con.close()
+
+        print("エラー？")
+        return redirect("/ranking")
+    else:
+        return render_template("withdrawal.html")
+
+
+@app.route("/<string:name>/deposit",methods=["GET","POST"])
+def deposit(name):
+    if request.method == "POST":
+        entry = request.form["entry"]
+        
+        data = search_data(name)#データを検索
+
+        cal_result = data[1] + int(entry)#預け入れ処理(計算結果)
+
+        #上書き処理
+        con = sqlite3.connect(DATABASE)
+        con.execute("update user_table set money = ? where name = ?",(cal_result,data[0]))
+        con.commit()
+        con.close()
+
+        print("エラー？")
+        return redirect("/ranking")
+    else:
+        return render_template("deposit.html")
 
 
 @app.route("/create",methods=["GET","POST"])
@@ -67,12 +119,11 @@ def create():
                 con.execute("insert into user_table values(?,?)",[name,1000])
                 con.commit()
                 a = con.execute("select * from user_table")
-                for b in a:
-                    print(b)
-        
-            print(name_match_flg)
+                return redirect("/")
+
             con.close()
-    return render_template("create.html")
+    else:
+        return render_template("create.html")
 
 
 if __name__ == "__main__":

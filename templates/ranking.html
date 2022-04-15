@@ -8,14 +8,14 @@
 {% else %}
     <table border = "1">
         <tr>
-            <th>順位</th>
+            <th>No.</th>
             <th>名前</th>
             <th>残高</th>
         </tr>
         {% for d in data %}
             <tr>
                 <th>{{d.rank}}</th>
-                <th>{{d.name}}</th>
+                <th><a href="/{{d.name}}/bank">{{d.name}}</a></th>
                 <th>{{d.money}}</th>
             </tr>
         {% endfor %}
