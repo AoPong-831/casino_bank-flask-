@@ -2,6 +2,11 @@
 {% block title %}TOPページ{% endblock %}
 
 {% block content %}
-<h1>新規登録</h1>
+<h1>ユーザー登録</h1>
+<form method="POST">
+    <label for="">ユーザー名</label>
+    <input type="text" name="name">
+    <input type="submit" value="新規登録">
+</form>
 <button onclick="history.back()">戻る</button>
 {% endblock %}
