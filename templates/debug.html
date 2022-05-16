@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}TOPページ{% endblock %}
+
+{% block content %}
+<h1>***Debug mode***</h1>
+<form method="POST">
+    <label for="">コマンド</label>
+    <input type="text" name="cmd">
+    <input type="submit" value="実行">
+</form>
+<h1>****************</h1>
+<button onclick="location.href='/home'">戻る</button>
+{% endblock %}

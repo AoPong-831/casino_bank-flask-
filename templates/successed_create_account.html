@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}TOPページ{% endblock %}
+
+{% block content %}
+<h1>アカウントが作成されました。</h1>
+<h3>{{name}}様に口座開設記念として $1,000 が振り込まれました。</h3>
+<button onclick="location.href='/home'">戻る</button>
+{% endblock %}

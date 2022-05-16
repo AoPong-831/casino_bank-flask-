@@ -46,7 +46,7 @@ def ranking():
     rank = 0
     for d in data:
         rank += 1
-        ranking_list.append({"rank":rank,"name":d[0],"money":d[1]})
+        ranking_list.append({"rank":rank,"name":d[0],"money":d[1],"debt":int(d[2]) * 1000})
 
     return render_template("ranking.html",data=ranking_list)
 
@@ -116,14 +116,42 @@ def create():
                     return render_template("error.html",error_text=error_text)
             
             if not(name_match_flg):#名前がダブらなかったとき
-                con.execute("insert into user_table values(?,?)",[name,1000])
+                con.execute("insert into user_table values(?,?,?)",[name,1000,0])
                 con.commit()
                 a = con.execute("select * from user_table")
-                return redirect("/")
+                return render_template("successed_create_account.html",name=name)
 
             con.close()
     else:
         return render_template("create.html")
+
+@app.route("/debug",methods=["GET","POST"])
+def debug():
+    if request.method == "POST":
+        cmd = int(request.form["cmd"])#送信されたcmdを受け取る
+
+        if cmd == 1:#DBの中身をコンソールに表示
+            con = sqlite3.connect(DATABASE)
+            data_list = con.execute("select * from user_table").fetchall()
+            print("="*10,"[DB]")
+            for data in data_list:
+                print(data)
+            print("="*10)
+            con.close()
+        
+        elif cmd == 2:#account_list.txtをDBにcopy
+            con = sqlite3.connect(DATABASE)
+            with open("info/account_list.txt","r",encoding="utf-8") as f:
+                arrange = []#dataが入る配列
+                for data in f:
+                    name,chip,debt = data.split()#名前、チップ、債務
+                    con.execute("insert into user_table values(?,?,?)",[name,chip,debt])
+                    con.commit()
+            con.close()
+
+        return render_template("debug.html")
+    else:
+        return render_template("debug.html")
 
 
 if __name__ == "__main__":

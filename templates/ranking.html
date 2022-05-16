@@ -11,16 +11,17 @@
             <th>No.</th>
             <th>名前</th>
             <th>残高</th>
+            <th>借金</th>
         </tr>
         {% for d in data %}
             <tr>
                 <th>{{d.rank}}</th>
                 <th><a href="/{{d.name}}/bank">{{d.name}}</a></th>
                 <th>{{d.money}}</th>
+                <th>{{d.debt}}</th>
             </tr>
         {% endfor %}
     </table>
 {% endif %}
-
-<button onclick="history.back()">戻る</button>
+<button onclick="location.href='/home'">戻る</button>
 {% endblock %}
