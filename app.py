@@ -1,8 +1,10 @@
 from flask import Flask
 from flask import render_template, request, redirect
-#from flask_sqlalchemy import SQLAlchemy
+
 import sqlite3
 import db
+import os#ファイル削除用
+import shutil#フォルダ削除用
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
@@ -24,6 +26,31 @@ def search_data(name):#データ検索
             break
     
     return request_data
+
+
+def Overwrite(data,cal_result):#上書き処理
+    #DB
+    con = sqlite3.connect(DATABASE)
+    con.execute("update user_table set money = ? where name = ?",(cal_result,data[0]))
+    con.commit()
+    con.close()
+    #account_list.txt
+    with open("info/account_list.txt","r",encoding="utf-8") as f:#読み込み
+        arrange = []
+        print("="*100)
+        for txt in f:
+            print(txt)
+            name,chip,debit = txt.split()#名前、チップ、債務
+            arrange.append([name,chip,debit])#.txt内容をarrangeに代入
+        for i in arrange:#chipに変更を加える。
+            if i[0] == data[0]:#名前が一致したら、変更を加える
+                i[1] = cal_result
+    with open("info/account_list.txt","w",encoding="utf-8") as f:#書き込み
+        for i in arrange:
+            f.write("{0} {1} {2}\n".format(i[0],i[1],i[2]))
+    #log.txt
+    with open("info/log/" + data[0] + ".txt","a",encoding="utf-8")as f:#Log書き込み
+        f.write(str(cal_result) + "\n")
 
 
 @app.route("/")
@@ -63,23 +90,15 @@ def bank(name):
     return render_template("bank.html",name=name)
 
 
-
 @app.route("/<string:name>/withdrawal",methods=["GET","POST"])
 def withdrawal(name):
     if request.method == "POST":
         entry = request.form["entry"]
-        
+
         data = search_data(name)#データを検索
 
-        cal_result = data[1] - int(entry)#引き出し処理(計算結果)
+        Overwrite(data,data[1] - int(entry))#引き出し処理(計算結果)
 
-        #上書き処理
-        con = sqlite3.connect(DATABASE)
-        con.execute("update user_table set money = ? where name = ?",(cal_result,data[0]))
-        con.commit()
-        con.close()
-
-        print("エラー？")
         return redirect("/ranking")
     else:
         return render_template("withdrawal.html")
@@ -89,18 +108,11 @@ def withdrawal(name):
 def deposit(name):
     if request.method == "POST":
         entry = request.form["entry"]
-        
+
         data = search_data(name)#データを検索
 
-        cal_result = data[1] + int(entry)#預け入れ処理(計算結果)
+        Overwrite(data,data[1] + int(entry))#預け入れ処理(計算結果)
 
-        #上書き処理
-        con = sqlite3.connect(DATABASE)
-        con.execute("update user_table set money = ? where name = ?",(cal_result,data[0]))
-        con.commit()
-        con.close()
-
-        print("エラー？")
         return redirect("/ranking")
     else:
         return render_template("deposit.html")
@@ -155,6 +167,10 @@ def debug():
                     con.execute("insert into user_table values(?,?,?)",[name,int(chip),int(debt)])
                     con.commit()
             con.close()
+        elif cmd == 3:#info,database.dbを削除(ローカルと入れ替えるための処理)
+            os.remove("database.db")
+            shutil.rmtree("info")
+            
 
         return render_template("debug.html")
     else:
