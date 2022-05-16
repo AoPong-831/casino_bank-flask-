@@ -43,12 +43,19 @@ def ranking():
     con.close()
 
     ranking_list = []
-    rank = 0
+    send_ranking_list = []
     for d in data:
+        ranking_list.append([d[0],int(d[1])])
+    dic = dict(ranking_list)
+    ranking_list = sorted(dic.items(),key=lambda x:x[1],reverse=True)
+    
+    rank = 1
+    for i in ranking_list:#順位を追加
+        send_ranking_list.append([rank,i[0],i[1]])
         rank += 1
-        ranking_list.append({"rank":rank,"name":d[0],"money":d[1],"debt":int(d[2]) * 1000})
+    print(send_ranking_list)
 
-    return render_template("ranking.html",data=ranking_list)
+    return render_template("ranking.html",data=send_ranking_list)
 
 
 @app.route("/<string:name>/bank")
@@ -145,7 +152,7 @@ def debug():
                 arrange = []#dataが入る配列
                 for data in f:
                     name,chip,debt = data.split()#名前、チップ、債務
-                    con.execute("insert into user_table values(?,?,?)",[name,chip,debt])
+                    con.execute("insert into user_table values(?,?,?)",[name,int(chip),int(debt)])
                     con.commit()
             con.close()
 
