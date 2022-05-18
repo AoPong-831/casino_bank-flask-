@@ -64,6 +64,8 @@ def home():
 
 @app.route("/ranking")
 def ranking():
+    #order byで降順出しできるじゃん！そしたら債務もできるじゃん！
+    """
     con = sqlite3.connect(DATABASE)
     data = con.execute("select * from user_table").fetchall()
     con.close()
@@ -82,6 +84,17 @@ def ranking():
     print(send_ranking_list)
 
     return render_template("ranking.html",data=send_ranking_list)
+    """
+    con = sqlite3.connect(DATABASE)
+    data = con.execute("select * from user_table order by money desc").fetchall()
+    con.close()
+
+    rank = 1#順位
+    ranking_list = []
+    for d in data:
+        ranking_list.append([rank,d[0],d[1],d[2]*1000])#順位、名前、残高、借金
+        rank += 1
+    return render_template("ranking.html",data = ranking_list)
 
 
 @app.route("/<string:name>/bank")

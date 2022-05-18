@@ -11,14 +11,14 @@
             <th>No.</th>
             <th>名前</th>
             <th>残高</th>
-            <!--<th>借金</th>-->
+            <th>借金</th>
         </tr>
         {% for d in data %}
             <tr>
                 <th>{{d[0]}}</th>
                 <th><a href="/{{d[1]}}/bank">{{d[1]}}</a></th>
                 <th>{{d[2]}}</th>
-                <!--<th>{{d.debt}}</th>-->
+                <th>{{d[3]}}</th>
             </tr>
         {% endfor %}
     </table>
