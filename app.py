@@ -1,5 +1,4 @@
-from flask import Flask
-from flask import render_template, request, redirect
+from flask import Flask,render_template, request, redirect,send_from_directory
 
 import sqlite3
 import db
@@ -170,6 +169,15 @@ def debug():
         elif cmd == 3:#info,database.dbを削除(ローカルと入れ替えるための処理)
             os.remove("database.db")
             shutil.rmtree("info")
+        
+        #elif cmd == 4:#infoをダウンロード
+        #    path = os.path.abspath(__file__)[:-7]
+        #    print("path:",path)
+        #    return send_from_directory(
+        #        directory = path + "\info",
+        #        filename="account_list.txt",
+        #        as_attachment=True
+        #        )
             
 
         return render_template("debug.html")
