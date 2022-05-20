@@ -8,4 +8,8 @@
     <input type="submit" value="確定">
 </form>
 <button onclick="history.back()">戻る</button>
+
+{% if money == 0 %}
+    <a href="/{{name}}/bank/withdrawal/acomn"><h4><font color="red">初めてのアコムン</font></h4></a>
+{% endif %}
 {% endblock %}

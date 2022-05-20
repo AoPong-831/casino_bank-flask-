@@ -11,26 +11,24 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
 DATABASE = "database.db"
 db.create_bank()
 
-error_text = ""#エラー時にerror.htmlで表示するテキスト
-
 
 def search_data(name):#データ検索
     con = sqlite3.connect(DATABASE)
-    data_list = con.execute("select * from user_table").fetchall()
+    data = con.execute("select * from user_table where name=?",[name]).fetchall()
     con.close()
-
+    """
     for data in data_list:
         if name == data[0]:#探している名前と一致
             request_data = data
             break
-    
-    return request_data
+    """
+    return list(data[0])
 
 
-def Overwrite(data,cal_result):#上書き処理
+def Overwrite(data):#上書き処理
     #DB
     con = sqlite3.connect(DATABASE)
-    con.execute("update user_table set money = ? where name = ?",(cal_result,data[0]))
+    con.execute("update user_table set money = ?,debt = ? where name = ?",(data[1],data[2],data[0]))
     con.commit()
     con.close()
     #account_list.txt
@@ -43,13 +41,14 @@ def Overwrite(data,cal_result):#上書き処理
             arrange.append([name,chip,debit])#.txt内容をarrangeに代入
         for i in arrange:#chipに変更を加える。
             if i[0] == data[0]:#名前が一致したら、変更を加える
-                i[1] = cal_result
+                i[1] = data[1]
+                i[2] = data[2]
     with open("info/account_list.txt","w",encoding="utf-8") as f:#書き込み
         for i in arrange:
             f.write("{0} {1} {2}\n".format(i[0],i[1],i[2]))
     #log.txt
     with open("info/log/" + data[0] + ".txt","a",encoding="utf-8")as f:#Log書き込み
-        f.write(str(cal_result) + "\n")
+        f.write(str(data[1]) + "\n")
 
 
 @app.route("/")
@@ -81,32 +80,49 @@ def bank(name):
     return render_template("bank.html",name=name)
 
 
-@app.route("/<string:name>/withdrawal",methods=["GET","POST"])
+@app.route("/<string:name>/bank/withdrawal",methods=["GET","POST"])
 def withdrawal(name):
     if request.method == "POST":
         entry = request.form["entry"]
 
         data = search_data(name)#データを検索
+        data[1] -= int(entry)
 
-        Overwrite(data,data[1] - int(entry))#引き出し処理(計算結果)
+        if data[1] < 0:#moneyがマイナス
+            return render_template("error.html",text="引き出し額が残高を上回っています。")
+        else:
+            Overwrite(data)#引き出し処理(計算結果)
 
         return redirect("/ranking")
     else:
-        return render_template("withdrawal.html")
+        con = sqlite3.connect(DATABASE)
+        money = con.execute("select money from user_table where name=?",[name]).fetchall()
+        con.close()
+        #money = money[0]
+        money=int(money[0][0])
+        return render_template("withdrawal.html",name=name,money=money)
+
+@app.route("/<string:name>/bank/withdrawal/acomn",methods=["GET","POST"])
+def acomn(name):
+    data = search_data(name)#データを検索
+    data[1] += 1000
+    data[2] += 1
+    Overwrite(data)#預け入れ処理(計算結果)
+    return render_template("acomn.html",name=name)
 
 
-@app.route("/<string:name>/deposit",methods=["GET","POST"])
+@app.route("/<string:name>/bank/deposit",methods=["GET","POST"])
 def deposit(name):
     if request.method == "POST":
         entry = request.form["entry"]
 
         data = search_data(name)#データを検索
-
-        Overwrite(data,data[1] + int(entry))#預け入れ処理(計算結果)
+        data[1] += int(entry)
+        Overwrite(data)#預け入れ処理(計算結果)
 
         return redirect("/ranking")
     else:
-        return render_template("deposit.html")
+        return render_template("deposit.html",name=name)
 
 
 @app.route("/create",methods=["GET","POST"])
@@ -114,7 +130,8 @@ def create():
     if request.method == "POST":
         name = request.form["name"]#送信されたnameを受け取る
         if name == "":#nameが空欄だったら
-            print("==error==")
+            pass
+            #データベース側でエラーが出ちゃう。
         else:
             con = sqlite3.connect(DATABASE)#データベースと接続
             list_name = con.execute("select name from user_table")
@@ -122,8 +139,7 @@ def create():
             for n in list_name:#なぜかnはlistになってる
                 if n[0] == name:
                     name_match_flg = True
-                    error_text = "この名前は既に使われています"
-                    return render_template("error.html",error_text=error_text)
+                    return render_template("error.html",text="この名前は既に使われています")
             
             if not(name_match_flg):#名前がダブらなかったとき
                 con.execute("insert into user_table values(?,?,?)",[name,1000,0])
