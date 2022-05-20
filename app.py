@@ -64,27 +64,6 @@ def home():
 
 @app.route("/ranking")
 def ranking():
-    #order byで降順出しできるじゃん！そしたら債務もできるじゃん！
-    """
-    con = sqlite3.connect(DATABASE)
-    data = con.execute("select * from user_table").fetchall()
-    con.close()
-
-    ranking_list = []
-    send_ranking_list = []
-    for d in data:
-        ranking_list.append([d[0],int(d[1])])
-    dic = dict(ranking_list)
-    ranking_list = sorted(dic.items(),key=lambda x:x[1],reverse=True)
-    
-    rank = 1
-    for i in ranking_list:#順位を追加
-        send_ranking_list.append([rank,i[0],i[1]])
-        rank += 1
-    print(send_ranking_list)
-
-    return render_template("ranking.html",data=send_ranking_list)
-    """
     con = sqlite3.connect(DATABASE)
     data = con.execute("select * from user_table order by money desc").fetchall()
     con.close()
