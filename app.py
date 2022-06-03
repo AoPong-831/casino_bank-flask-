@@ -146,6 +146,8 @@ def create():
                 con.commit()
                 a = con.execute("select * from user_table")
                 return render_template("successed_create_account.html",name=name)
+                with open("info/account_list.txt","a",encoding="utf-8") as f:#書き込み
+                    f.write("{0} {1} {2}\n".format(name,1000,0))
 
             con.close()
     else:
@@ -186,6 +188,7 @@ def debug():
             return response
     else:
         return render_template("debug.html")
+    return redirect("/")
 
 if __name__ == "__main__":
     app.run(debug=True)

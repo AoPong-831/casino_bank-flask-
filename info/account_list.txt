@@ -14,3 +14,5 @@ tuguna 1000 0
 shinno 1079 0
 K 940 0
 misaki 1055 0
+Yurina 0 1
+haaki 0 0
