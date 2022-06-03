@@ -1,4 +1,4 @@
-from flask import Flask,render_template, request, redirect,send_from_directory
+from flask import Flask,render_template, request, redirect,Response,make_response
 
 import sqlite3
 import db
@@ -6,7 +6,7 @@ import os#ファイル削除用
 import shutil#フォルダ削除用
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'#いらんくね？
 
 DATABASE = "database.db"
 db.create_bank()
@@ -178,20 +178,14 @@ def debug():
             os.remove("database.db")
             shutil.rmtree("info")
         
-        #elif cmd == 4:#infoをダウンロード
-        #    path = os.path.abspath(__file__)[:-7]
-        #    print("path:",path)
-        #    return send_from_directory(
-        #        directory = path + "\info",
-        #        filename="account_list.txt",
-        #        as_attachment=True
-        #        )
-            
-
-        return render_template("debug.html")
+        elif cmd == 4:#infoをダウンロード
+            response = make_response()
+            response.data  = open('info', "rb").read()
+            response.headers['Content-Type'] = 'application/octet-stream'
+            response.headers['Content-Disposition'] = 'attachment; filename=info'
+            return response
     else:
         return render_template("debug.html")
-
 
 if __name__ == "__main__":
     app.run(debug=True)
