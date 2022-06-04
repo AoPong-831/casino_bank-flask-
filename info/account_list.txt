@@ -1,6 +1,6 @@
-～+つばきち+～ 1210 4
-～+mikan+～ 1000 1
-airi 3675 0
+～+つばきち+～ 0 4
+～+mikan+～ 1425 1
+airi 3180 0
 tmiwa 937 0
 104 875 0
 さるさま 1061 0
@@ -10,9 +10,9 @@ sinsin 856 0
 ちー 1261 0
 zahand 800 0
 なおぴょん 1244 0
-tuguna 1000 0
+tuguna 2700 0
 shinno 1079 0
 K 940 0
 misaki 1055 0
 Yurina 0 1
-haaki 0 0
+haaki 2500 1
