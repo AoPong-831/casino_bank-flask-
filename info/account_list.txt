@@ -1,4 +1,4 @@
-～+つばきち+～ 0 4
+～+つばきち+～ 830 5
 ～+mikan+～ 1425 1
 airi 3180 0
 tmiwa 937 0
@@ -8,7 +8,7 @@ papi 96 0
 caro 1042 0
 sinsin 856 0
 ちー 1261 0
-zahand 800 0
+zahand 610 0
 なおぴょん 1244 0
 tuguna 2700 0
 shinno 1079 0
@@ -16,3 +16,4 @@ K 940 0
 misaki 1055 0
 Yurina 0 1
 haaki 2500 1
+つくだに 481 0
