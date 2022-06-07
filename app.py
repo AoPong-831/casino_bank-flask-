@@ -145,10 +145,13 @@ def create():
                 con.execute("insert into user_table values(?,?,?)",[name,1000,0])
                 con.commit()
                 a = con.execute("select * from user_table")
-                return render_template("successed_create_account.html",name=name)
-                with open("info/account_list.txt","a",encoding="utf-8") as f:#書き込み
+                
+                with open("info/account_list.txt","a",encoding="utf-8") as f:#account_listに追加
                     f.write("{0} {1} {2}\n".format(name,1000,0))
-
+                    print("="*100)
+                with open("info/log/" + name + ".txt","a",encoding="utf-8")as f:#Log追加
+                    f.write("1000\n")
+                return render_template("successed_create_account.html",name=name)
             con.close()
     else:
         return render_template("create.html")
@@ -191,4 +194,4 @@ def debug():
     return redirect("/")
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    app.run(debug=True)
