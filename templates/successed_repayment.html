@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}TOPページ{% endblock %}
+
+{% block content %}
+<h1>こちらアコムンです。</h1>
+
+<h3>返済手続きが完了しました。</h1>
+{% if debt == 0 %}
+    <h3>完済ありがとうございます。</h3>
+    <h3>またのご利用を、お待ちしております。</h3>
+{% else %}
+    <h3>残り ${{debt * 1500}} です。({{debt}}回)</h3>
+    <h3>引き続きよろしくお願い致します。</h3>
+{% endif %}
+<button onclick="location.href='/ranking'">戻る</button>
+{% endblock %}

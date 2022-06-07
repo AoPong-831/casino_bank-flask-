@@ -8,6 +8,10 @@
 {% else %}
     <h2>{{name}}さんは現在 ${{debt}} の負債があります。</h2>
 {% endif %}
-
+<button onclick="location.href='/{{name}}/bank/acomn/repayment'">ご返済</button>
+<br><br>
+<button onclick="location.href='/{{name}}/bank/acomn/loan'">ご融資</button>
+<h5>利息:1回に付き$500</h5>
+<br>
 <button onclick="location.href='/ranking'">戻る</button>
 {% endblock %}

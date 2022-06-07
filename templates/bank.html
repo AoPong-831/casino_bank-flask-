@@ -4,8 +4,8 @@
 {% block content %}
 <h1>{{name}}さん。ご利用ありがとうございます。</h1>
 <button onclick="location.href='/{{name}}/bank/withdrawal'">引き出し</button>
-<p></p>
+<br><br>
 <button onclick="location.href='/{{name}}/bank/deposit'">預け入れ</button>
-<p></p>
+<br><br>
 <button onclick="history.back()">戻る</button>
 {% endblock %}

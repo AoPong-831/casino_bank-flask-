@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}TOPページ{% endblock %}
+
+{% block content %}
+<h1>こちらアコムンです。</h1>
+
+<h2>「返済回数」を入力し、「確定」を押してください。</h2>
+<h5>残り返済回数: {{debt}}回 // 残り返済額: ${{debt * 1500}}</h5>
+<h6>利息:1回に付き$500</h6>
+<form method="POST">
+    <!---選択ボタン式にしたかった...。受け取りがわからない。
+    <select name="返済回数" size=debt>
+        {% for i in range(debt) %}
+            <option name="entry">{{i + 1}}</option>
+        {% endfor %}
+        <input type="submit" value="確定">
+    </select>
+    -->
+    <h4>=================</h4>
+    <h3>希望返済回数を入力してください。</h3>
+    <input type="text" name="entry">
+    <h4>=================</h4>
+    <h4>現在所持金 ${{money}}</h4>
+    <h4>返済予定額 ${{pay_back * 1500}}</h4>
+    <h4>-----------------</h4>
+    <h4>差し引き額 ${{money - (pay_back * 1500)}}</h4>
+    <h4>=================</h4>
+
+    <input type="submit" name="send" value="見積もる">
+    <input type="submit" name="send" value="確定">
+</form>
+
+<br><br>
+<button onclick="location.href='/ranking'">戻る</button>
+{% endblock %}

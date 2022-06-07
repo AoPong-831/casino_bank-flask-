@@ -3,7 +3,6 @@ from flask import Flask,render_template, request, redirect,Response,make_respons
 import sqlite3
 import db
 import os#ファイル削除用
-import shutil#フォルダ削除用
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'#いらんくね？
@@ -95,24 +94,57 @@ def withdrawal(name):
 
         return redirect("/ranking")
     else:
-        con = sqlite3.connect(DATABASE)
-        money = con.execute("select money from user_table where name=?",[name]).fetchall()
-        con.close()
-        money=int(money[0][0])
-        return render_template("withdrawal.html",name=name,money=money)
-
-@app.route("/<string:name>/bank/withdrawal/acomn",methods=["GET","POST"])
-def acomn(name):
-    if request.method == "POST":
         data = search_data(name)#データを検索
+        money=data[1]
+        debt =data[2]
+        return render_template("withdrawal.html",name=name,money=money,debt=debt)
+
+@app.route("/<string:name>/bank/acomn",methods=["GET","POST"])
+def acomn(name):
+    data = search_data(name)#データを検索
+    return render_template("acomn.html",name=name,debt=data[2]*1000)
+
+@app.route("/<string:name>/bank/acomn/repayment",methods=["GET","POST"])
+def acomn_repayment(name):
+    entry = 0#返済回数が0として置いておく。
+    if request.method == "POST":
+        entry = request.form.get("entry")#返済回数を取得
+        if entry=="":#返済回数が空白の時、0にする
+            entry = 0
+        button = request.form["send"]#どのボタンが押されたのか取得
+        if button == "見積もる":
+            data = search_data(name)#データを検索
+            #return render_template("acomn_repayment.html",name=name,money=debt[1],debt=data[2],pay_back=int(entry))
+        elif button == "確定":
+            data = search_data(name)#データを検索
+            repayment = int(entry) * 1500#返済予定額を作成
+            if int(entry) > data[2] or entry == 0:#返済回数が不正の場合
+                return render_template("error.html",text="返済回数を確認してください。")
+            elif (data[1] - repayment) >= 0 and int(entry) <= data[2]:#返済できる場合
+                data[1] = data[1] - repayment
+                data[2] = data[2] - int(entry)
+                Overwrite(data)#預け入れ処理(計算結果)
+                return render_template("successed_repayment.html",name=name,debt=data[2])
+            elif (data[1] - repayment) < 0:#残高が足りず返済できない場合
+                return render_template("error.html",text="残高が不足しています。")
+            else:#予期せぬ例外
+                return render_template("error.html",text="アコム,返済中,エラー")
+    else:
+        data = search_data(name)#データを検索
+        #return render_template("acomn_repayment.html",name=name,money=debt[1],debt=data[2],pay_back=0)
+    return render_template("acomn_repayment.html",name=name,money=data[1],debt=data[2],pay_back=int(entry))
+
+@app.route("/<string:name>/bank/acomn/loan")
+def acomn_loan(name):
+    is_flg=True#Trueの時、融資される。
+    data = search_data(name)#データを検索
+    if not(data[1] == 0):#残高が0出ない場合、flgがFalseになり、融資されない。
+        is_flg=False
+    else:
         data[1] += 1000
         data[2] += 1
         Overwrite(data)#預け入れ処理(計算結果)
-    else:
-        data = search_data(name)#データを検索
-        
-        return render_template("acomn.html",name=name,bedt=data[2]*1000)
-
+    return render_template("acomn_loan.html",name=name,is_flg=is_flg)
 
 @app.route("/<string:name>/bank/deposit",methods=["GET","POST"])
 def deposit(name):
@@ -125,16 +157,18 @@ def deposit(name):
 
         return redirect("/ranking")
     else:
-        return render_template("deposit.html",name=name)
+        data = search_data(name)#データを検索
+        money=data[1]
+        debt=data[2]
+        return render_template("deposit.html",name=name,money=money,debt=debt)
 
 
 @app.route("/create",methods=["GET","POST"])
 def create():
     if request.method == "POST":
-        name = request.form["name"]#送信されたnameを受け取る
-        if name == "":#nameが空欄だったら
-            pass
-            #データベース側でエラーが出ちゃう。
+        name = request.form.get("name")#送信されたnameを受け取る
+        if name == "":#nameが空欄だったら(上を.get()にすることで、空白はNoneになるはずが""で入っちゃってる)
+            return render_template("error.html",text="名前が空白です。")
         else:
             con = sqlite3.connect(DATABASE)#データベースと接続
             list_name = con.execute("select name from user_table")
@@ -173,7 +207,10 @@ def debug():
             print("="*10)
             con.close()
         
-        elif cmd == 2:#account_list.txtをDBにcopy
+        elif cmd == 2:
+        #database.dbを削除してaccount_list.txtをDBにcopy
+            os.remove("database.db")
+            db.create_bank()
             con = sqlite3.connect(DATABASE)
             with open("info/account_list.txt","r",encoding="utf-8") as f:
                 arrange = []#dataが入る配列
@@ -182,11 +219,8 @@ def debug():
                     con.execute("insert into user_table values(?,?,?)",[name,int(chip),int(debt)])
                     con.commit()
             con.close()
-        elif cmd == 3:#info,database.dbを削除(ローカルと入れ替えるための処理)
-            os.remove("database.db")
-            shutil.rmtree("info")
         
-        elif cmd == 4:#infoをダウンロード
+        elif cmd == 4:#infoをダウンロード(バグだらけ)
             response = make_response()
             response.data  = open('info', "rb").read()
             response.headers['Content-Type'] = 'application/octet-stream'
@@ -197,4 +231,4 @@ def debug():
     return redirect("/")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)

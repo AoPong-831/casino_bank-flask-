@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}TOPページ{% endblock %}
+
+{% block content %}
+<h1>こちらアコムンです。</h1>
+{% if is_flg %}
+    <h2>{{name}}さんに $1,000 の融資を致しました。</h2>
+    <h2>ランキングよりご確認ください。</h2>
+{% else %}
+    <h2>申し訳ございませんが、{{name}}さんは融資資格をお持ちではありません。</h2>
+    <h2>今一度、融資資格を確認の上、再度申請してください。</h2>
+{% endif %}
+
+<button onclick="location.href='/ranking'">戻る</button>
+{% endblock %}
