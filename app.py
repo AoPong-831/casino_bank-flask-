@@ -98,17 +98,20 @@ def withdrawal(name):
         con = sqlite3.connect(DATABASE)
         money = con.execute("select money from user_table where name=?",[name]).fetchall()
         con.close()
-        #money = money[0]
         money=int(money[0][0])
         return render_template("withdrawal.html",name=name,money=money)
 
 @app.route("/<string:name>/bank/withdrawal/acomn",methods=["GET","POST"])
 def acomn(name):
-    data = search_data(name)#データを検索
-    data[1] += 1000
-    data[2] += 1
-    Overwrite(data)#預け入れ処理(計算結果)
-    return render_template("acomn.html",name=name)
+    if request.method == "POST":
+        data = search_data(name)#データを検索
+        data[1] += 1000
+        data[2] += 1
+        Overwrite(data)#預け入れ処理(計算結果)
+    else:
+        data = search_data(name)#データを検索
+        
+        return render_template("acomn.html",name=name,bedt=data[2]*1000)
 
 
 @app.route("/<string:name>/bank/deposit",methods=["GET","POST"])
