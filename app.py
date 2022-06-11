@@ -2,6 +2,7 @@ from flask import Flask,render_template, request, redirect,Response,make_respons
 
 import sqlite3
 import db
+import datetime
 import os#ファイル削除用
 
 app = Flask(__name__)
@@ -15,40 +16,43 @@ def search_data(name):#データ検索
     con = sqlite3.connect(DATABASE)
     data = con.execute("select * from user_table where name=?",[name]).fetchall()
     con.close()
-    """
-    for data in data_list:
-        if name == data[0]:#探している名前と一致
-            request_data = data
-            break
-    """
     return list(data[0])
 
 
 def Overwrite(data):#上書き処理
     #DB
     con = sqlite3.connect(DATABASE)
-    con.execute("update user_table set money = ?,debt = ? where name = ?",(data[1],data[2],data[0]))
+    con.execute("update user_table set money = ?,debt = ?,visits = ?,date = ? where name = ?",(data[1],data[2],data[3],data[4],data[0]))
     con.commit()
     con.close()
     #account_list.txt
     with open("info/account_list.txt","r",encoding="utf-8") as f:#読み込み
         arrange = []
-        print("="*100)
         for txt in f:
-            print(txt)
-            name,chip,debit = txt.split()#名前、チップ、債務
-            arrange.append([name,chip,debit])#.txt内容をarrangeに代入
+            name,chip,debit,visits,date = txt.split()#名前、チップ、債務、来店回数、最新日時
+            arrange.append([name,chip,debit,visits,date])#.txt内容をarrangeに代入
         for i in arrange:#chipに変更を加える。
             if i[0] == data[0]:#名前が一致したら、変更を加える
                 i[1] = data[1]
                 i[2] = data[2]
+                i[3] = data[3]
+                i[4] = data[4]
     with open("info/account_list.txt","w",encoding="utf-8") as f:#書き込み
         for i in arrange:
-            f.write("{0} {1} {2}\n".format(i[0],i[1],i[2]))
+            f.write("{0} {1} {2} {3} {4}\n".format(i[0],i[1],i[2],i[3],i[4]))
     #log.txt
     with open("info/log/" + data[0] + ".txt","a",encoding="utf-8")as f:#Log書き込み
         f.write(str(data[1]) + "\n")
 
+
+def get_date():#日付取得
+    dt_now = datetime.datetime.now()#年月日、時間(コンマ単位まで)
+    return dt_now.strftime("%y-%m-%d")
+
+
+def write_visit_history(data):#来店履歴
+    with open("info/visit_history.txt","a",encoding="utf-8") as f:#来店履歴書き込み
+        f.write("[{0}] {1} : {2}回目\n".format(data[4],data[0],data[3]))
 
 @app.route("/")
 def index():
@@ -69,14 +73,30 @@ def ranking():
     rank = 1#順位
     ranking_list = []
     for d in data:
-        ranking_list.append([rank,d[0],d[1],d[2]*1000])#順位、名前、残高、借金
+        ranking_list.append([rank,d[0],d[1],d[2]*1000,d[3]])#順位、名前、残高、借金、来店回数
         rank += 1
     return render_template("ranking.html",data = ranking_list)
 
 
 @app.route("/<string:name>/bank")
 def bank(name):
-    return render_template("bank.html",name=name)
+    visit_flg = False
+    data = search_data(name)#データを検索
+    if data[4] != get_date():#本日初来店の場合、flg=True
+        print("="*100)
+        print(data[4],":",get_date())
+        print("="*100)
+        visit_flg = True
+    return render_template("bank.html",name=name,visit_flg=visit_flg)
+
+@app.route("/<string:name>/login_check")
+def login_check(name):#来店更新用のチェックページ
+    data = search_data(name)#データを検索
+    data[3] += 1#来店回数を増やす
+    data[4] = get_date()#来店日時を更新
+    Overwrite(data)#データ更新
+    write_visit_history(data)
+    return render_template("login_check.html",name=name)
 
 
 @app.route("/<string:name>/bank/withdrawal",methods=["GET","POST"])
@@ -179,13 +199,10 @@ def create():
                     return render_template("error.html",text="この名前は既に使われています")
             
             if not(name_match_flg):#名前がダブらなかったとき
-                con.execute("insert into user_table values(?,?,?)",[name,1000,0])
+                con.execute("insert into user_table values(?,?,?,?,?)",[name,1000,0,1,get_date()])
                 con.commit()
-                a = con.execute("select * from user_table")
-                
                 with open("info/account_list.txt","a",encoding="utf-8") as f:#account_listに追加
-                    f.write("{0} {1} {2}\n".format(name,1000,0))
-                    print("="*100)
+                    f.write("{0} {1} {2} {3} {4}\n".format(name,1000,0,1,get_date()))
                 with open("info/log/" + name + ".txt","a",encoding="utf-8")as f:#Log追加
                     f.write("1000\n")
                 return render_template("successed_create_account.html",name=name)
@@ -215,8 +232,8 @@ def debug():
             with open("info/account_list.txt","r",encoding="utf-8") as f:
                 arrange = []#dataが入る配列
                 for data in f:
-                    name,chip,debt = data.split()#名前、チップ、債務
-                    con.execute("insert into user_table values(?,?,?)",[name,int(chip),int(debt)])
+                    name,chip,debt,visits,date = data.split()#名前、チップ、債務、来店回数、日時
+                    con.execute("insert into user_table values(?,?,?,?,?)",[name,int(chip),int(debt),int(visits),date])
                     con.commit()
             con.close()
         

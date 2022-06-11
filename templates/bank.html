@@ -3,6 +3,10 @@
 
 {% block content %}
 <h1>{{name}}さん。ご利用ありがとうございます。</h1>
+{% if visit_flg %}
+    <a href="/{{name}}/login_check">ログインボーナスはこちらをクリック</a><br><br>
+{% endif %}
+
 <button onclick="location.href='/{{name}}/bank/withdrawal'">引き出し</button>
 <br><br>
 <button onclick="location.href='/{{name}}/bank/deposit'">預け入れ</button>

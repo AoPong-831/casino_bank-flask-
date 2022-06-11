@@ -12,6 +12,7 @@
             <th>名前</th>
             <th>残高</th>
             <th>借金</th>
+            <th>来店回数</th>
         </tr>
         {% for d in data %}
             <tr>
@@ -19,6 +20,7 @@
                 <th><a href="/{{d[1]}}/bank">{{d[1]}}</a></th>
                 <th>{{d[2]}}</th>
                 <th>{{d[3]}}</th>
+                <th>{{d[4]}}</th>
             </tr>
         {% endfor %}
     </table>
