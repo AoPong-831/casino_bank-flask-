@@ -3,6 +3,8 @@ from flask import Flask,render_template, request, redirect,Response,make_respons
 import sqlite3
 import db
 import datetime
+t_delta=datetime.timedelta(hours=9)#9時間
+JST = datetime.timezone(t_delta,"JST")#UTCから9時間差の「JST」タイムゾーン
 import os#ファイル削除用
 import shutil#フォルダ操作用(zip圧縮)
 
@@ -47,7 +49,7 @@ def Overwrite(data):#上書き処理
 
 
 def get_date():#日付取得
-    dt_now = datetime.datetime.now()#年月日、時間(コンマ単位まで)
+    dt_now = datetime.datetime.now(JST)#年月日、時間(コンマ単位まで)
     return dt_now.strftime("%y-%m-%d")
 
 
@@ -83,6 +85,9 @@ def ranking():
 def bank(name):
     visit_flg = False
     data = search_data(name)#データを検索
+    print("="*100)
+    print(data[4],":",get_date())
+    print("="*100)
     if data[4] != get_date():#本日初来店の場合、flg=True
         print("="*100)
         print(data[4],":",get_date())
