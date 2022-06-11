@@ -4,6 +4,7 @@ import sqlite3
 import db
 import datetime
 import os#ファイル削除用
+import shutil#フォルダ操作用(zip圧縮)
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'#いらんくね？
@@ -236,12 +237,13 @@ def debug():
                     con.execute("insert into user_table values(?,?,?,?,?)",[name,int(chip),int(debt),int(visits),date])
                     con.commit()
             con.close()
-        
-        elif cmd == 4:#infoをダウンロード(バグだらけ)
+        elif cmd == 3:#infoフォルダをzipに圧縮してDL
+            #infoファイルを圧縮
+            shutil.make_archive("info", format="zip",root_dir="info")
+            #zipをDL
             response = make_response()
-            response.data  = open('info', "rb").read()
-            response.headers['Content-Type'] = 'application/octet-stream'
-            response.headers['Content-Disposition'] = 'attachment; filename=info'
+            response.data  = open('info.zip', "rb").read()
+            response.headers['Content-Disposition'] = 'attachment; filename=info.zip'
             return response
     else:
         return render_template("debug.html")
