@@ -7,3 +7,14 @@ table {
     border-collapse:  collapse; /* セルの線を重ねる */
 }
 
+.button {
+    font-size: 1.375rem;
+    background: rgb(0, 221, 7);
+    color: #fff;
+    border-radius: 5px;
+    padding: 18px 32px;
+}
+.button:hover {
+    background: rgb(0, 119, 4);
+}
+
