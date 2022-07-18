@@ -85,15 +85,9 @@ def ranking():
 def bank(name):
     visit_flg = False
     data = search_data(name)#データを検索
-    print("="*100)
-    print(data[4],":",get_date())
-    print("="*100)
     if data[4] != get_date():#本日初来店の場合、flg=True
-        print("="*100)
-        print(data[4],":",get_date())
-        print("="*100)
         visit_flg = True
-    return render_template("bank.html",name=name,visit_flg=visit_flg)
+    return render_template("bank.html",name=name,money=data[1],debt=data[2],visit_flg=visit_flg)
 
 @app.route("/<string:name>/login_check")
 def login_check(name):#来店更新用のチェックページ
@@ -121,9 +115,7 @@ def withdrawal(name):
         return redirect("/ranking")
     else:
         data = search_data(name)#データを検索
-        money=data[1]
-        debt =data[2]
-        return render_template("withdrawal.html",name=name,money=money,debt=debt)
+        return render_template("withdrawal.html",name=name,money=data[1],debt=data[2])
 
 @app.route("/<string:name>/bank/acomn",methods=["GET","POST"])
 def acomn(name):
@@ -184,9 +176,7 @@ def deposit(name):
         return redirect("/ranking")
     else:
         data = search_data(name)#データを検索
-        money=data[1]
-        debt=data[2]
-        return render_template("deposit.html",name=name,money=money,debt=debt)
+        return render_template("deposit.html",name=name,money=data[1],debt=data[2])
 
 
 @app.route("/create",methods=["GET","POST"])

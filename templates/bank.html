@@ -3,6 +3,7 @@
 
 {% block content %}
 <h1>{{name}}さん。ご利用ありがとうございます。</h1>
+<h3>残高 : {{money}} 借金 : {{debt * 1000}}</h3>
 {% if visit_flg %}
     <a class="button" href="/{{name}}/login_check">ログインボーナスはこちらをクリック</a><br><br>
 {% endif %}
