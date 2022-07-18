@@ -57,18 +57,9 @@ def write_visit_history(data):#来店履歴
     with open("info/visit_history.txt","a",encoding="utf-8") as f:#来店履歴書き込み
         f.write("[{0}] {1} : {2}回目\n".format(data[4],data[0],data[3]))
 
+#===============================
 @app.route("/")
 def index():
-    return render_template("home.html")
-
-
-@app.route("/home")
-def home():
-    return render_template("home.html")
-
-
-@app.route("/ranking")
-def ranking():
     con = sqlite3.connect(DATABASE)
     data = con.execute("select * from user_table order by money desc").fetchall()
     con.close()
@@ -78,7 +69,7 @@ def ranking():
     for d in data:
         ranking_list.append([rank,d[0],d[1],d[2]*1000,d[3]])#順位、名前、残高、借金、来店回数
         rank += 1
-    return render_template("ranking.html",data = ranking_list)
+    return render_template("index.html",data = ranking_list)
 
 
 @app.route("/all_ranking")
@@ -148,7 +139,7 @@ def withdrawal(name):
         else:
             Overwrite(data)#引き出し処理(計算結果)
 
-        return redirect("/ranking")
+        return redirect("/")
     else:
         data = search_data(name)#データを検索
         return render_template("withdrawal.html",name=name,money=data[1],debt=data[2])
@@ -209,7 +200,7 @@ def deposit(name):
         data[1] += int(entry)
         Overwrite(data)#預け入れ処理(計算結果)
 
-        return redirect("/ranking")
+        return redirect("/")
     else:
         data = search_data(name)#データを検索
         return render_template("deposit.html",name=name,money=data[1],debt=data[2])

@@ -2,8 +2,10 @@
 {% block title %}TOPページ{% endblock %}
 
 {% block content %}
-<h1>ランキング</h1>
+<h1>Camellia's Casino </h1>
+
 <button class="rank_button" onclick="location.href='/all_ranking'">総資産ランキングはこちら！</button>
+<h2>ランキング</h2>
 {% if data == [] %}
     <p>ランキングはありません</p>
 {% else %}
@@ -26,5 +28,9 @@
         {% endfor %}
     </table>
 {% endif %}
-<button onclick="location.href='/home'">戻る</button>
+==========
+<h3>初めての方</h3>
+<button onclick="location.href='/create'">新規登録</button>
+<h6>下記は製作者以外触らないでください</h6>
+<button onclick="location.href='/debug'">デバック</button>
 {% endblock %}
