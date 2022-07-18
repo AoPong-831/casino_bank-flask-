@@ -5,7 +5,7 @@
 <h1>{{name}}さん。ご利用ありがとうございます。</h1>
 <h3>残高 : {{money}} 借金 : {{debt * 1000}}</h3>
 {% if visit_flg %}
-    <a class="login_button" href="/{{name}}/login_check">ログインボーナスはこちらをクリック</a><br><br>
+    <a class="a_non login_button" href="/{{name}}/login_check">ログインボーナスはこちらをクリック</a><br><br>
 {% endif %}
 
 <button onclick="location.href='/{{name}}/bank/withdrawal'">引き出し</button>
@@ -13,7 +13,7 @@
 <button onclick="location.href='/{{name}}/bank/deposit'">預け入れ</button>
 <br><br>
 {% if money == 0 or debt > 0 %}
-    <a class="acomn_button" href="/{{name}}/bank/acomn">初めてのアコムン</a><br><br>
+    <a class="a_non acomn_button" href="/{{name}}/bank/acomn">初めてのアコムン</a><br><br>
 {% endif %}
 <button onclick="history.back()">戻る</button>
 {% endblock %}

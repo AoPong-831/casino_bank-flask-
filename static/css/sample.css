@@ -8,8 +8,8 @@ table {
     border-collapse:  collapse; /* セルの線を重ねる */
 }
 
-a{
-    text-decoration: none;/* aタグの下線消す */
+.a_non{
+    text-decoration: none;/* aタグの下線消す*/
 }
 
 /* loginボーナス用ボタン設定 */

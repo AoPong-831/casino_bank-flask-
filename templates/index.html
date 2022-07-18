@@ -20,7 +20,7 @@
         {% for d in data %}
             <tr>
                 <th>{{d[0]}}</th>
-                <th><a href="/{{d[1]}}/bank">{{d[1]}}</a></th>
+                <th><a class=a_non href="/{{d[1]}}/bank">{{d[1]}}</a></th>
                 <th>{{d[2]}}</th>
                 <th>{{d[3]}}</th>
                 <th>{{d[4]}}</th>
@@ -33,4 +33,7 @@
 <button onclick="location.href='/create'">新規登録</button>
 <h6>下記は製作者以外触らないでください</h6>
 <button onclick="location.href='/debug'">デバック</button>
+<br>
+メモ:ディーラー求人あります。詳しくはこちら<br>
+www.test
 {% endblock %}
