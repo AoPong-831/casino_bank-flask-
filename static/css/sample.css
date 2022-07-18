@@ -1,3 +1,4 @@
+/* rankingのテーブル関係 */
 th,td {
     border: solid 1px;  /* 枠線指定 */
     padding: 10px;      /* 余白指定 */
@@ -6,6 +7,8 @@ th,td {
 table {
     border-collapse:  collapse; /* セルの線を重ねる */
 }
+
+/* loginボーナス用ボタン設定 */
 
 .button {
     font-size: 1.375rem;
@@ -18,3 +21,14 @@ table {
     background: rgb(0, 119, 4);
 }
 
+/* 総資産ランキング用 */
+.rank_button {
+    font-size: 1rem;
+    background: rgb(0, 210, 221);
+    color: #fff;
+    border-radius: 5px;
+    padding: 8px 12px;
+}
+.rank_button:hover {
+    background: rgb(0, 144, 152);
+}

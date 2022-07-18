@@ -81,6 +81,42 @@ def ranking():
     return render_template("ranking.html",data = ranking_list)
 
 
+@app.route("/all_ranking")
+def all_ranking():
+    #全データ取り出し
+    con = sqlite3.connect(DATABASE)
+    data = con.execute("select * from user_table").fetchall()
+    con.close()
+
+    draft_DB = "all_ranking_DB.db"#仮置きのDB
+    db.create_all_ranking(draft_DB)#DB作成
+
+    #データをdraft_DB用に加工
+    con = sqlite3.connect(draft_DB)
+    for d in data:
+        #名前,純資産,残高,返済額,借金
+        name = d[0]
+        money = d[1]
+        repayment = d[2] * 1500
+        net_worth = money - repayment
+        debt = d[2] * 1000
+        con.execute("insert into user_table values(?,?,?,?,?)",[name, net_worth, money, repayment, debt])
+    con.commit()
+    data = con.execute("select * from user_table order by net_worth desc").fetchall()
+    
+    #純資産で並べ替え
+    rank = 1#順位
+    ranking_list = []
+    for d in data:
+        ranking_list.append([rank,d[0],d[1],d[2],d[3],d[4]])#名前,純資産,残高,返済額,借金
+        rank += 1
+
+    #db削除
+    con.execute("drop table if exists user_table")
+    con.close
+    return render_template("all_ranking.html",data = ranking_list)
+
+
 @app.route("/<string:name>/bank")
 def bank(name):
     visit_flg = False
@@ -222,7 +258,7 @@ def debug():
         
         elif cmd == 2:
         #database.dbを削除してaccount_list.txtをDBにcopy
-            os.remove("database.db")
+            os.remove(DATABASE)
             db.create_bank()
             con = sqlite3.connect(DATABASE)
             with open("info/account_list.txt","r",encoding="utf-8") as f:

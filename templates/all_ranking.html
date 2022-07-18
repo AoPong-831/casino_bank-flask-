@@ -2,8 +2,8 @@
 {% block title %}TOPページ{% endblock %}
 
 {% block content %}
-<h1>ランキング</h1>
-<button class="rank_button" onclick="location.href='/all_ranking'">総資産ランキングはこちら！</button>
+<h1>総資産ランキング</h1>
+<button class="rank_button" onclick="location.href='/ranking'">ランキングへ戻る</button>
 {% if data == [] %}
     <p>ランキングはありません</p>
 {% else %}
@@ -11,9 +11,10 @@
         <tr>
             <th>順位</th>
             <th>名前</th>
+            <th>総資産</th>
             <th>残高</th>
+            <th>返済額</th>
             <th>借金</th>
-            <th>来店回数</th>
         </tr>
         {% for d in data %}
             <tr>
@@ -22,9 +23,9 @@
                 <th>{{d[2]}}</th>
                 <th>{{d[3]}}</th>
                 <th>{{d[4]}}</th>
+                <th>{{d[5]}}</th>
             </tr>
         {% endfor %}
     </table>
 {% endif %}
-<button onclick="location.href='/home'">戻る</button>
 {% endblock %}
