@@ -233,6 +233,17 @@ def create():
     else:
         return render_template("create.html")
 
+
+@app.route("/rulebook")
+def rulebook():
+    return render_template("rulebook.html")
+
+
+@app.route("/job_offer")
+def job_offer():
+    return render_template("job_offer.html")
+
+
 @app.route("/debug",methods=["GET","POST"])
 def debug():
     if request.method == "POST":
