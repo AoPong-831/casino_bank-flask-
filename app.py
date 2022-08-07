@@ -60,6 +60,11 @@ def write_visit_history(data):#来店履歴
 #===============================
 @app.route("/")
 def index():
+    dt_now = datetime.datetime.now(JST)#年月日、時間(コンマ単位まで)
+    print("@"*100)
+    print( dt_now.strftime("%y-%m-%d"))
+
+
     con = sqlite3.connect(DATABASE)
     data = con.execute("select * from user_table order by money desc").fetchall()
     con.close()
