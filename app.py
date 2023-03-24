@@ -1,5 +1,4 @@
 from flask import Flask,render_template, request, redirect,Response,make_response
-
 import sqlite3
 import db
 import datetime
